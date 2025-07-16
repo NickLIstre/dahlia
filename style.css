@@ -8,3 +8,20 @@ body {
   width: 100vw;
   height: 100vh;
 }
+
+#controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.7);
+  padding: 12px;
+  border-radius: 10px;
+  color: white;
+  font-family: sans-serif;
+  z-index: 10;
+}
+#controls input, #controls select {
+  margin: 5px 0;
+  display: block;
+  width: 100%;
+}

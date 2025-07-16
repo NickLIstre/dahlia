@@ -2,7 +2,7 @@ const visitedCountries = ['Canada', 'United States of America'];
 
 const visitedPins = [
   { lat: 40.7128, lng: -74.0060, size: .5, label: "New York – Group Trip", type: "visited" },
-  { lat: 43.6511, lng: 	-79.3839, size: .5, label: "Toronto – My love's home <3", type: "visited" },
+  { lat: 43.6511, lng: 	-79.3839, size: .5, label: "Toronto – My love", type: "visited" },
   { lat: 45.5017, lng: 	-73.5673, size: .5, label: "Montreal – Winter 2024", type: "visited" },
   { lat: 35.7143, lng: 	-83.5102, size: .5, label: "Gatlinburg – Winter 2023", type: "visited" },
 ];
@@ -47,3 +47,35 @@ setTimeout(() => {
   world.controls().autoRotate = true;
   world.controls().autoRotateSpeed = 0.3;
 }, 1000);
+
+document.getElementById('addPin').addEventListener('click', e => {
+  e.preventDefault();
+
+  const lat = parseFloat(document.getElementById('lat').value);
+  const lng = parseFloat(document.getElementById('lng').value);
+  const label = document.getElementById('label').value;
+  const type = document.getElementById('type').value;
+
+  if (isNaN(lat) || isNaN(lng) || !label) return alert("Please fill out all fields.");
+
+  const newPin = { lat, lng, size: 0.5, label, type };
+  allPins.push(newPin);
+  world.pointsData(allPins); // update globe
+});
+
+document.getElementById('addCountry').addEventListener('click', e => {
+  e.preventDefault();
+
+  const country = document.getElementById('countryName').value.trim();
+  if (!country) return alert("Enter a country name");
+
+  visitedCountries.push(country);
+
+  // Re-highlight countries
+  fetch('https://unpkg.com/world-atlas@2/countries-110m.json')
+    .then(res => res.json())
+    .then(worldData => {
+      const countries = window.topojson.feature(worldData, worldData.objects.countries).features;
+      world.polygonsData(countries);
+    });
+});

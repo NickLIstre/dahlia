@@ -17,6 +17,25 @@
   <div><span class="dot wishlist"></span> Wishlist</div>
 </div>
 
+<div id="controls">
+  <h2>Add a New Memory</h2>
+  <label>Lat: <input type="number" id="lat"></label>
+  <label>Lng: <input type="number" id="lng"></label>
+  <label>Label: <input type="text" id="label"></label>
+  <label>Type:
+    <select id="type">
+      <option value="visited">Visited</option>
+      <option value="wishlist">Wishlist</option>
+    </select>
+  </label>
+  <button id="addPin">Add Pin</button>
+
+  <h3>Add a Visited Country</h3>
+  <label>Country Name: <input type="text" id="countryName"></label>
+  <button id="addCountry">Highlight Country</button>
+</div>
+
+
   <script src="script.js"></script>
 </body>
 </html>
