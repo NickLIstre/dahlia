@@ -1,15 +1,18 @@
-const visitedCountries = ['Canada', 'United States of America'];
+const visitedCountries = JSON.parse(localStorage.getItem('visitedCountries')) || ['Canada', 'United States of America'];
 
-const visitedPins = [
+const visitedPins = JSON.parse(localStorage.getItem('visitedPins')) || [
   { lat: 40.7128, lng: -74.0060, size: .5, label: "New York – Group Trip", type: "visited" },
   { lat: 43.6511, lng: 	-79.3839, size: .5, label: "Toronto – My love", type: "visited" },
   { lat: 45.5017, lng: 	-73.5673, size: .5, label: "Montreal – Winter 2024", type: "visited" },
   { lat: 35.7143, lng: 	-83.5102, size: .5, label: "Gatlinburg – Winter 2023", type: "visited" },
+  { lat: 33.7490, lng: 	-84.3880, size: .5, label: "Atlanta – Summer 2025", type: "visited" },
+  { lat: 33.4735, lng: 	-82.0105, size: .5, label: "Augusta – Me", type: "visited" }
 ];
 
-const wishlistPins = [
-  { lat: 48.8566, lng: 2.3522, size: 0.5, label: "Paris – Someday ❤️", type: "wishlist" },
-  { lat: 35.6762, lng: 139.6503, size: 1, label: "Tokyo – Future Goal 🌸", type: "wishlist" }
+const wishlistPins = JSON.parse(localStorage.getItem('wishlistPins')) || [
+  { lat: 48.8566, lng: 2.3522, size: .5, label: "Paris – Someday ❤️", type: "wishlist" },
+  { lat: 41.8719, lng: 12.5674, size: .5, label: "Italy – Someday ❤️", type: "wishlist" },
+  { lat: 35.6762, lng: 139.6503, size: .5, label: "Tokyo – Winter 2025 🌸", type: "wishlist" }
 ];
 
 const allPins = [...visitedPins, ...wishlistPins];
@@ -42,9 +45,9 @@ fetch('https://unpkg.com/world-atlas@2/countries-110m.json')
       .polygonStrokeColor(() => '#111');
   });
 
-// Auto-rotate
+// Auto-rotate option
 setTimeout(() => {
-  world.controls().autoRotate = true;
+  world.controls().autoRotate = false;
   world.controls().autoRotateSpeed = 0.3;
 }, 1000);
 
@@ -60,6 +63,15 @@ document.getElementById('addPin').addEventListener('click', e => {
 
   const newPin = { lat, lng, size: 0.5, label, type };
   allPins.push(newPin);
+
+  // Save to localStorage
+  if (type === "visited") {
+    visitedPins.push(newPin);
+    localStorage.setItem('visitedPins', JSON.stringify(visitedPins));
+  } else {
+    wishlistPins.push(newPin);
+    localStorage.setItem('wishlistPins', JSON.stringify(wishlistPins));
+  }
   world.pointsData(allPins); // update globe
 });
 
@@ -70,6 +82,7 @@ document.getElementById('addCountry').addEventListener('click', e => {
   if (!country) return alert("Enter a country name");
 
   visitedCountries.push(country);
+  localStorage.setItem('visitedCountries', JSON.stringify(visitedCountries));
 
   // Re-highlight countries
   fetch('https://unpkg.com/world-atlas@2/countries-110m.json')

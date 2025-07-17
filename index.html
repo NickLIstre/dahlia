@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Our Travel Globe</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>For You 💌</title>
+  <link rel="stylesheet" href="landing.css" />
 </head>
 <body>
-  <div id="globeViz"></div>
+  <div class="envelope" id="envelope">
+    <div class="flap"></div>
+    <div class="body"></div>
+    <div class="heart-seal">💖</div>
+  </div>
 
-  <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
-  <script src="https://unpkg.com/globe.gl"></script>
-  <script src="https://unpkg.com/topojson@3"></script>
+  <div class="letter" id="letter">
+    <p>Happy 4th Anniversary, my love ❤️❤️❤️</p>
+    <p>
+      I know we haven't been able to travel as much as we wanted, but I
+      cherish every moment we've spent together. I can't wait to travel the world with you
+      and create a whole bunch of new memories.
+    </p><br>
+    <p>Here's a fun way we can keep track of where we've been and where we want to go 
+      together ❤️
+    </p>
+    <a href="globe.html" class="globe-link">🌍 View Our Globe</a>
+  </div>
 
-  <div id="legend">
-  <div><span class="dot visited"></span> Visited</div>
-  <div><span class="dot wishlist"></span> Wishlist</div>
-</div>
+  <script>
+    const envelope = document.getElementById("envelope");
+    const letter = document.getElementById("letter");
 
-<div id="controls">
-  <h2>Add a New Memory</h2>
-  <label>Lat: <input type="number" id="lat"></label>
-  <label>Lng: <input type="number" id="lng"></label>
-  <label>Label: <input type="text" id="label"></label>
-  <label>Type:
-    <select id="type">
-      <option value="visited">Visited</option>
-      <option value="wishlist">Wishlist</option>
-    </select>
-  </label>
-  <button id="addPin">Add Pin</button>
-
-  <h3>Add a Visited Country</h3>
-  <label>Country Name: <input type="text" id="countryName"></label>
-  <button id="addCountry">Highlight Country</button>
-</div>
-
-
-  <script src="script.js"></script>
+    envelope.addEventListener("click", () => {
+      envelope.classList.add("open");
+      setTimeout(() => {
+        letter.classList.add("show");
+      }, 1000); // Delay for flap animation
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,99 @@
+body {
+  background: #fef6f3;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.envelope {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  background: #e0a899;
+  border: 2px solid #b2726f;
+  border-radius: 6px;
+  cursor: pointer;
+  perspective: 1000px;
+  transition: transform 0.5s ease;
+}
+
+.flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #d38d86;
+  transform-origin: top center;
+  transition: transform 1s ease;
+  z-index: 2;
+  border-bottom: 2px solid #b2726f;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #fbe9e7;
+  border-top: 2px solid #b2726f;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.heart-seal {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  z-index: 3;
+}
+
+.envelope.open .flap {
+  transform: rotateX(-160deg);
+}
+
+.letter {
+  max-width: 400px;
+  text-align: center;
+  background: white;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease, transform 1s ease;
+  pointer-events: none;
+}
+
+.letter.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.globe-link {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: #754168;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.globe-link:hover {
+  background: #e9badd;
+}
