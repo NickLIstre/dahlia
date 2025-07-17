@@ -1,12 +1,36 @@
 const visitedCountries = JSON.parse(localStorage.getItem('visitedCountries')) || ['Canada', 'United States of America'];
 
 const visitedPins = JSON.parse(localStorage.getItem('visitedPins')) || [
-  { lat: 40.7128, lng: -74.0060, size: .5, label: "New York – Group Trip", type: "visited" },
-  { lat: 43.6511, lng: 	-79.3839, size: .5, label: "Toronto – My love", type: "visited" },
-  { lat: 45.5017, lng: 	-73.5673, size: .5, label: "Montreal – Winter 2024", type: "visited" },
-  { lat: 35.7143, lng: 	-83.5102, size: .5, label: "Gatlinburg – Winter 2023", type: "visited" },
-  { lat: 33.7490, lng: 	-84.3880, size: .5, label: "Atlanta – Summer 2025", type: "visited" },
-  { lat: 33.4735, lng: 	-82.0105, size: .5, label: "Augusta – Me", type: "visited" }
+  { lat: 40.7128, lng: -74.0060, size: .5, label: "New York – Group Trip", type: "visited", 
+    photos: [
+    "photos/toronto1.jpg",
+    "photos/toronto2.jpg"
+  ] },
+  { lat: 43.6511, lng: 	-79.3839, size: .5, label: "Toronto – My love", type: "visited", 
+    photos: [
+    "photos/toronto1.jpg",
+    "photos/toronto2.jpg"
+  ]},
+  { lat: 45.5017, lng: 	-73.5673, size: .5, label: "Montreal – Winter 2024", type: "visited",
+    photos: [
+    "photos/toronto1.jpg",
+    "photos/toronto2.jpg"
+  ]  },
+  { lat: 35.7143, lng: 	-83.5102, size: .5, label: "Gatlinburg – Winter 2023", type: "visited",
+    photos: [
+    "photos/toronto1.jpg",
+    "photos/toronto2.jpg"
+  ]},
+  { lat: 33.7490, lng: 	-84.3880, size: .5, label: "Atlanta – Summer 2025", type: "visited",
+    photos: [
+    "photos/toronto1.jpg",
+    "photos/toronto2.jpg"
+  ]},
+  { lat: 33.4735, lng: 	-82.0105, size: .5, label: "Augusta – Me", type: "visited",
+    photos: [
+    "photos/toronto1.jpg",
+    "photos/toronto2.jpg"
+  ]}
 ];
 
 const wishlistPins = JSON.parse(localStorage.getItem('wishlistPins')) || [
@@ -50,6 +74,28 @@ setTimeout(() => {
   world.controls().autoRotate = false;
   world.controls().autoRotateSpeed = 0.3;
 }, 1000);
+
+const modal = document.getElementById("photo-modal");
+const gallery = document.getElementById("photo-gallery");
+const closeBtn = document.getElementById("close-modal");
+
+world
+  .pointOfView({ lat: 20, lng: 0, altitude: 2 }, 0)
+  .onPointClick(point => {
+    if (point.photos && point.photos.length > 0) {
+      gallery.innerHTML = point.photos.map(url => `<img src="${url}" alt="memory">`).join("");
+      modal.style.display = "flex";
+    }
+  });
+
+closeBtn.onclick = () => {
+  modal.style.display = "none";
+};
+
+window.onclick = e => {
+  if (e.target === modal) modal.style.display = "none";
+};
+
 
 document.getElementById('addPin').addEventListener('click', e => {
   e.preventDefault();
