@@ -4,23 +4,82 @@
   <title>Login</title>
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+  <style>
+  body {
+    background: #9FBFB5;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .login-container {
+    background: rgba(255,255,255,0.95);
+    padding: 32px 28px 24px 28px;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 320px;
+  }
+  h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #3a4a47;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 8px 0 16px 0;
+    border: 1px solid #b7c9c3;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #f6faf9;
+    transition: border 0.2s;
+  }
+  input[type="email"]:focus, input[type="password"]:focus {
+    border: 1.5px solid #6b8f89;
+    outline: none;
+  }
+  button {
+    width: 100%;
+    padding: 10px 0;
+    background: #3a4a47;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+  }
+  button:hover {
+    background: #5e7c74;
+  }
+  #error {
+    color: #b94a48;
+    margin-top: 8px;
+    text-align: center;
+    min-height: 20px;
+  }
+</style>
 </head>
 <body>
-  <h2>Welcome Back 💖</h2>
-  <input type="email" id="email" placeholder="Email" />
-  <input type="password" id="password" placeholder="Password" />
-  <button onclick="login()">Login</button>
-  <p id="error"></p>
-
+  <div class="login-container">
+    <h2>Welcome Back 💖</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p id="error"></p>
+  </div>
+  <script src="firebase-config.js"></script>
   <script>
-    const firebaseConfig = {
-  apiKey: "AIzaSyD-lZwixaJeRa8rwbgbr8giSDh-AIsqzr8",
-  authDomain: "stephanotis-c168c.firebaseapp.com",
-  projectId: "stephanotis-c168c",
-  storageBucket: "stephanotis-c168c.firebasestorage.app",
-  messagingSenderId: "313775180247",
-  appId: "1:313775180247:web:d7aafa9bbfa2ffa0716392"
-};
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 

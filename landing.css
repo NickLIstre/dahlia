@@ -1,5 +1,5 @@
 body {
-  background: #fef6f3;
+  background: #9FBFB5;
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
   display: flex;
@@ -86,7 +86,7 @@ body {
   display: inline-block;
   margin-top: 16px;
   padding: 10px 20px;
-  background: #754168;
+  background: #3a4a47;
   color: white;
   text-decoration: none;
   border-radius: 6px;
@@ -95,5 +95,5 @@ body {
 }
 
 .globe-link:hover {
-  background: #e9badd;
+  background: #5e7c74;
 }

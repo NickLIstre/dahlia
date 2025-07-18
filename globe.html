@@ -10,20 +10,20 @@
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-storage-compat.js"></script>
 
+  <script src="firebase-config.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyD-lZwixaJeRa8rwbgbr8giSDh-AIsqzr8",
-      authDomain: "stephanotis-c168c.firebaseapp.com",
-      projectId: "stephanotis-c168c",
-      storageBucket: "stephanotis-c168c.firebasestorage.app",
-      messagingSenderId: "313775180247",
-      appId: "1:313775180247:web:d7aafa9bbfa2ffa0716392"
-    };
-
     firebase.initializeApp(firebaseConfig);
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        document.body.style.display = "";
+      }
+    });
   </script>
 </head>
-<body>
+<body style="display:none;">
   <div id="globeViz"></div>
 
   <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
@@ -63,7 +63,6 @@
     </div>
   </div>
 
-  <!-- 🔐 Auth check & dynamic script injection -->
   <script>
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
