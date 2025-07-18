@@ -1,36 +1,18 @@
 const visitedCountries = JSON.parse(localStorage.getItem('visitedCountries')) || ['Canada', 'United States of America'];
-
+let activePinIndex = null;
 const visitedPins = JSON.parse(localStorage.getItem('visitedPins')) || [
   { lat: 40.7128, lng: -74.0060, size: .5, label: "New York – Group Trip", type: "visited", 
-    photos: [
-    "photos/toronto1.jpg",
-    "photos/toronto2.jpg"
-  ] },
+    photos: [] },
   { lat: 43.6511, lng: 	-79.3839, size: .5, label: "Toronto – My love", type: "visited", 
-    photos: [
-    "photos/toronto1.jpg",
-    "photos/toronto2.jpg"
-  ]},
+    photos: []},
   { lat: 45.5017, lng: 	-73.5673, size: .5, label: "Montreal – Winter 2024", type: "visited",
-    photos: [
-    "photos/toronto1.jpg",
-    "photos/toronto2.jpg"
-  ]  },
+    photos: []  },
   { lat: 35.7143, lng: 	-83.5102, size: .5, label: "Gatlinburg – Winter 2023", type: "visited",
-    photos: [
-    "photos/toronto1.jpg",
-    "photos/toronto2.jpg"
-  ]},
+    photos: []},
   { lat: 33.7490, lng: 	-84.3880, size: .5, label: "Atlanta – Summer 2025", type: "visited",
-    photos: [
-    "photos/toronto1.jpg",
-    "photos/toronto2.jpg"
-  ]},
+    photos: []},
   { lat: 33.4735, lng: 	-82.0105, size: .5, label: "Augusta – Me", type: "visited",
-    photos: [
-    "photos/toronto1.jpg",
-    "photos/toronto2.jpg"
-  ]}
+    photos: []}
 ];
 
 const wishlistPins = JSON.parse(localStorage.getItem('wishlistPins')) || [
@@ -82,10 +64,16 @@ const closeBtn = document.getElementById("close-modal");
 world
   .pointOfView({ lat: 20, lng: 0, altitude: 2 }, 0)
   .onPointClick(point => {
+    // Find the index of the clicked pin
+    activePinIndex = allPins.findIndex(
+      p => p.lat === point.lat && p.lng === point.lng && p.label === point.label
+    );
     if (point.photos && point.photos.length > 0) {
       gallery.innerHTML = point.photos.map(url => `<img src="${url}" alt="memory">`).join("");
-      modal.style.display = "flex";
+    } else {
+      gallery.innerHTML = "<p>No photos yet. Upload one!</p>";
     }
+    modal.style.display = "flex";
   });
 
 closeBtn.onclick = () => {
@@ -138,3 +126,75 @@ document.getElementById('addCountry').addEventListener('click', e => {
       world.polygonsData(countries);
     });
 });
+
+function uploadPhoto() {
+  const file = document.getElementById("photo-upload").files[0];
+  if (!file) return alert("Please select a file");
+  if (activePinIndex === null) return alert("No pin selected!");
+
+  const storageRef = firebase.storage().ref(`globe-photos/${Date.now()}_${file.name}`);
+  const uploadTask = storageRef.put(file);
+
+  uploadTask.on(
+    'state_changed',
+    snapshot => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      document.getElementById("upload-status").innerText = `Uploading... ${progress.toFixed(0)}%`;
+    },
+    error => {
+      alert("Upload failed.");
+      console.error(error);
+    },
+    () => {
+      uploadTask.snapshot.ref.getDownloadURL().then(url => {
+        document.getElementById("upload-status").innerText = `Uploaded!`;
+        // Add photo URL to the pin's photos array
+        if (!allPins[activePinIndex].photos) allPins[activePinIndex].photos = [];
+        allPins[activePinIndex].photos.push(url);
+
+        // Save to localStorage
+        if (allPins[activePinIndex].type === "visited") {
+          visitedPins.forEach(pin => {
+            if (pin.lat === allPins[activePinIndex].lat && pin.lng === allPins[activePinIndex].lng && pin.label === allPins[activePinIndex].label) {
+              if (!pin.photos) pin.photos = [];
+              pin.photos.push(url);
+            }
+          });
+          localStorage.setItem('visitedPins', JSON.stringify(visitedPins));
+        } else {
+          wishlistPins.forEach(pin => {
+            if (pin.lat === allPins[activePinIndex].lat && pin.lng === allPins[activePinIndex].lng && pin.label === allPins[activePinIndex].label) {
+              if (!pin.photos) pin.photos = [];
+              pin.photos.push(url);
+            }
+          });
+          localStorage.setItem('wishlistPins', JSON.stringify(wishlistPins));
+        }
+
+        // Update gallery and globe
+        gallery.innerHTML = allPins[activePinIndex].photos.map(url => `<img src="${url}" alt="memory">`).join("");
+        world.pointsData(allPins);
+      });
+    }
+  );
+}
+
+const auth = firebase.auth();
+
+function login() {
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      document.getElementById("auth-status").innerText = `Welcome, ${userCredential.user.email}`;
+      document.getElementById("auth-box").style.display = "none";
+      document.getElementById("upload-ui").style.display = "block"; // show upload form
+    })
+    .catch(error => {
+      console.error(error);
+      document.getElementById("auth-status").innerText = "Login failed.";
+    });
+}
+
+

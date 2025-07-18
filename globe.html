@@ -4,6 +4,24 @@
   <meta charset="UTF-8" />
   <title>Our Travel Globe</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-storage-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-lZwixaJeRa8rwbgbr8giSDh-AIsqzr8",
+      authDomain: "stephanotis-c168c.firebaseapp.com",
+      projectId: "stephanotis-c168c",
+      storageBucket: "stephanotis-c168c.firebasestorage.app",
+      messagingSenderId: "313775180247",
+      appId: "1:313775180247:web:d7aafa9bbfa2ffa0716392"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </head>
 <body>
   <div id="globeViz"></div>
@@ -13,36 +31,49 @@
   <script src="https://unpkg.com/topojson@3"></script>
 
   <div id="legend">
-  <div><span class="dot visited"></span> Visited</div>
-  <div><span class="dot wishlist"></span> Wishlist</div>
-</div>
-
-<div id="controls">
-  <h2>Add a New Memory</h2>
-  <label>Lat: <input type="number" id="lat"></label>
-  <label>Lng: <input type="number" id="lng"></label>
-  <label>Label: <input type="text" id="label"></label>
-  <label>Type:
-    <select id="type">
-      <option value="visited">Visited</option>
-      <option value="wishlist">Wishlist</option>
-    </select>
-  </label>
-  <button id="addPin">Add Pin</button>
-
-  <h3>Add a Visited Country</h3>
-  <label>Country Name: <input type="text" id="countryName"></label>
-  <button id="addCountry">Highlight Country</button>
-</div>
-
-<div id="photo-modal" class="modal">
-  <div class="modal-content">
-    <span class="close-button" id="close-modal">&times;</span>
-    <div id="photo-gallery"></div>
+    <div><span class="dot visited"></span> Visited</div>
+    <div><span class="dot wishlist"></span> Wishlist</div>
   </div>
-</div>
 
+  <div id="controls">
+    <h2>Add a New Memory</h2>
+    <label>Lat: <input type="number" id="lat"></label>
+    <label>Lng: <input type="number" id="lng"></label>
+    <label>Label: <input type="text" id="label"></label>
+    <label>Type:
+      <select id="type">
+        <option value="visited">Visited</option>
+        <option value="wishlist">Wishlist</option>
+      </select>
+    </label>
+    <button id="addPin">Add Pin</button>
 
-  <script src="script.js"></script>
+    <h3>Add a Visited Country</h3>
+    <label>Country Name: <input type="text" id="countryName"></label>
+    <button id="addCountry">Highlight Country</button>
+  </div>
+
+  <div id="photo-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="close-modal">&times;</span>
+      <div id="photo-gallery"></div>
+      <input type="file" id="photo-upload" accept="image/*" />
+      <button onclick="uploadPhoto()">Upload Photo</button>
+      <div id="upload-status"></div>
+    </div>
+  </div>
+
+  <!-- 🔐 Auth check & dynamic script injection -->
+  <script>
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        const script = document.createElement('script');
+        script.src = "script.js";
+        document.body.appendChild(script);
+      }
+    });
+  </script>
 </body>
 </html>

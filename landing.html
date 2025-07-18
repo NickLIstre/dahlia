@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>For You 💌</title>
+  <link rel="stylesheet" href="landing.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-storage-compat.js"></script>
+  <script>
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) window.location.href = "login.html";
+  });
+</script>
+</head>
+<body>
+  <div class="envelope" id="envelope">
+    <div class="flap"></div>
+    <div class="body"></div>
+    <div class="heart-seal">💖</div>
+  </div>
+
+  <div class="letter" id="letter">
+    <p>Happy 4th Anniversary, my love ❤️❤️❤️</p>
+    <p>
+      I know we haven't been able to travel as much as we wanted, but I
+      cherish every moment we've spent together. I can't wait to travel the world with you
+      and create a whole bunch of new memories.
+    </p><br>
+    <p>Here's a fun way we can keep track of where we've been and where we want to go 
+      together ❤️
+    </p>
+    <a href="globe.html" class="globe-link">🌍 View Our Globe</a>
+  </div>
+
+  <script>
+    const envelope = document.getElementById("envelope");
+    const letter = document.getElementById("letter");
+
+    envelope.addEventListener("click", () => {
+      envelope.classList.add("open");
+      setTimeout(() => {
+        letter.classList.add("show");
+      }, 1000); // Delay for flap animation
+    });
+  </script>
+</body>
+</html>

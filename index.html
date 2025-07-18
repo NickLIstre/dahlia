@@ -1,39 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>For You 💌</title>
-  <link rel="stylesheet" href="landing.css" />
+  <title>Login</title>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-  <div class="envelope" id="envelope">
-    <div class="flap"></div>
-    <div class="body"></div>
-    <div class="heart-seal">💖</div>
-  </div>
-
-  <div class="letter" id="letter">
-    <p>Happy 4th Anniversary, my love ❤️❤️❤️</p>
-    <p>
-      I know we haven't been able to travel as much as we wanted, but I
-      cherish every moment we've spent together. I can't wait to travel the world with you
-      and create a whole bunch of new memories.
-    </p><br>
-    <p>Here's a fun way we can keep track of where we've been and where we want to go 
-      together ❤️
-    </p>
-    <a href="globe.html" class="globe-link">🌍 View Our Globe</a>
-  </div>
+  <h2>Welcome Back 💖</h2>
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <p id="error"></p>
 
   <script>
-    const envelope = document.getElementById("envelope");
-    const letter = document.getElementById("letter");
+    const firebaseConfig = {
+  apiKey: "AIzaSyD-lZwixaJeRa8rwbgbr8giSDh-AIsqzr8",
+  authDomain: "stephanotis-c168c.firebaseapp.com",
+  projectId: "stephanotis-c168c",
+  storageBucket: "stephanotis-c168c.firebasestorage.app",
+  messagingSenderId: "313775180247",
+  appId: "1:313775180247:web:d7aafa9bbfa2ffa0716392"
+};
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-    envelope.addEventListener("click", () => {
-      envelope.classList.add("open");
-      setTimeout(() => {
-        letter.classList.add("show");
-      }, 1000); // Delay for flap animation
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          // redirect to envelope/landing page
+          window.location.href = "landing.html";
+        })
+        .catch(error => {
+          document.getElementById("error").innerText = "Login failed.";
+          console.error(error);
+        });
+    }
+
+    // Auto-redirect if already logged in
+    auth.onAuthStateChanged(user => {
+      if (user) window.location.href = "landing.html";
     });
   </script>
 </body>
