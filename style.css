@@ -11,19 +11,49 @@ body {
 
 #controls {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(0,0,0,0.7);
-  padding: 12px;
-  border-radius: 10px;
+  top: 24px;
+  right: 24px;
+  background: rgba(0,0,0,0.75);
+  padding: 16px 18px;
+  border-radius: 12px;
   color: white;
   font-family: sans-serif;
   z-index: 10;
+  min-width: 240px;
+  max-width: 320px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+}
+#controls h2, #controls h3 {
+  margin-top: 0;
+  font-size: 1.1em;
+}
+#controls label {
+  font-size: 0.95em;
 }
 #controls input, #controls select {
-  margin: 5px 0;
+  margin: 5px 0 12px 0;
   display: block;
   width: 100%;
+  font-size: 1em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 6px;
+  background: #222;
+  color: #fff;
+}
+#controls button {
+  width: 100%;
+  margin-bottom: 10px;
+  background: #5c8164;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 0;
+  font-size: 1em;
+  cursor: pointer;
+}
+#controls button:hover {
+  background: #275029;
 }
 
 .modal {
