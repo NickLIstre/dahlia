@@ -1,27 +1,20 @@
-const visitedCountries = JSON.parse(localStorage.getItem('visitedCountries')) || ['Canada', 'United States of America'];
+let visitedCountries = [];
 let activePinIndex = null;
-const visitedPins = JSON.parse(localStorage.getItem('visitedPins')) || [
-  { lat: 40.7128, lng: -74.0060, size: .5, label: "New York – Group Trip", type: "visited", 
-    photos: [] },
-  { lat: 43.6511, lng: 	-79.3839, size: .5, label: "Toronto – My love", type: "visited", 
-    photos: []},
-  { lat: 45.5017, lng: 	-73.5673, size: .5, label: "Montreal – Winter 2024", type: "visited",
-    photos: []  },
-  { lat: 35.7143, lng: 	-83.5102, size: .5, label: "Gatlinburg – Winter 2023", type: "visited",
-    photos: []},
-  { lat: 33.7490, lng: 	-84.3880, size: .5, label: "Atlanta – Summer 2025", type: "visited",
-    photos: []},
-  { lat: 33.4735, lng: 	-82.0105, size: .5, label: "Augusta – Me", type: "visited",
-    photos: []}
-];
 
-const wishlistPins = JSON.parse(localStorage.getItem('wishlistPins')) || [
-  { lat: 48.8566, lng: 2.3522, size: .5, label: "Paris – Someday ❤️", type: "wishlist" },
-  { lat: 41.8719, lng: 12.5674, size: .5, label: "Italy – Someday ❤️", type: "wishlist" },
-  { lat: 35.6762, lng: 139.6503, size: .5, label: "Tokyo – Winter 2025 🌸", type: "wishlist" }
-];
+// Initialize Firebase
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-const allPins = [...visitedPins, ...wishlistPins];
+let allPins = []; // Will be loaded from Firestore
+
+// Load visitedCountries from Firestore (shared for all users)
+db.collection('shared').doc('visitedCountries').onSnapshot(doc => {
+  visitedCountries = doc.exists ? doc.data().countries : [];
+  // Re-render polygons if globe is already loaded
+  if (window.world && window.countriesData) {
+    world.polygonsData(window.countriesData);
+  }
+});
 
 const world = Globe()
   (document.getElementById('globeViz'))
@@ -33,22 +26,35 @@ const world = Globe()
   .pointColor(d => d.type === "visited" ? '#00ffffff' : '#bd1212ff')
   .pointAltitude('size');
 
-// Load countries
+// Load pins from Firestore (real-time updates)
+db.collection('pins').onSnapshot(snapshot => {
+  allPins = [];
+  snapshot.forEach(doc => {
+    const pin = doc.data();
+    pin._id = doc.id; // Save Firestore doc id for later updates
+    allPins.push(pin);
+  });
+  world.pointsData(allPins);
+});
+
+// Load countries and keep reference for re-rendering
 fetch('https://unpkg.com/world-atlas@2/countries-110m.json')
   .then(res => res.json())
   .then(worldData => {
     const countries = window.topojson.feature(worldData, worldData.objects.countries).features;
+    window.countriesData = countries; // Save for later re-render
 
     world
       .polygonsData(countries)
       .polygonAltitude(0.01)
       .polygonCapColor(feat =>
-        visitedCountries.includes(feat.properties.name) //Highlight visited countries
+        visitedCountries.includes(feat.properties.name)
           ? 'rgba(79, 202, 86, 0.6)'
           : 'rgba(255,255,255,0.05)'
       )
       .polygonSideColor(() => 'rgba(0, 100, 200, 0.15)')
       .polygonStrokeColor(() => '#111');
+    window.world = world; // Save for later re-render
   });
 
 // Auto-rotate option
@@ -84,7 +90,6 @@ window.onclick = e => {
   if (e.target === modal) modal.style.display = "none";
 };
 
-
 document.getElementById('addPin').addEventListener('click', e => {
   e.preventDefault();
 
@@ -95,18 +100,21 @@ document.getElementById('addPin').addEventListener('click', e => {
 
   if (isNaN(lat) || isNaN(lng) || !label) return alert("Please fill out all fields.");
 
-  const newPin = { lat, lng, size: 0.5, label, type };
-  allPins.push(newPin);
+  const newPin = { lat, lng, size: 0.5, label, type, photos: [] };
 
-  // Save to localStorage
-  if (type === "visited") {
-    visitedPins.push(newPin);
-    localStorage.setItem('visitedPins', JSON.stringify(visitedPins));
-  } else {
-    wishlistPins.push(newPin);
-    localStorage.setItem('wishlistPins', JSON.stringify(wishlistPins));
-  }
-  world.pointsData(allPins); // update globe
+  // Save to Firestore
+  db.collection('pins').add(newPin)
+    .then(() => {
+      // Firestore onSnapshot will update allPins and globe
+      document.getElementById('lat').value = '';
+      document.getElementById('lng').value = '';
+      document.getElementById('label').value = '';
+      document.getElementById('type').value = 'visited';
+    })
+    .catch(err => {
+      alert("Failed to add pin.");
+      console.error(err);
+    });
 });
 
 document.getElementById('addCountry').addEventListener('click', e => {
@@ -115,16 +123,14 @@ document.getElementById('addCountry').addEventListener('click', e => {
   const country = document.getElementById('countryName').value.trim();
   if (!country) return alert("Enter a country name");
 
-  visitedCountries.push(country);
-  localStorage.setItem('visitedCountries', JSON.stringify(visitedCountries));
+  // Add to Firestore shared document
+  db.collection('shared').doc('visitedCountries').get().then(doc => {
+    let countries = doc.exists ? doc.data().countries : [];
+    if (!countries.includes(country)) countries.push(country);
+    db.collection('shared').doc('visitedCountries').set({ countries });
+  });
 
-  // Re-highlight countries
-  fetch('https://unpkg.com/world-atlas@2/countries-110m.json')
-    .then(res => res.json())
-    .then(worldData => {
-      const countries = window.topojson.feature(worldData, worldData.objects.countries).features;
-      world.polygonsData(countries);
-    });
+  document.getElementById('countryName').value = '';
 });
 
 function uploadPhoto() {
@@ -132,6 +138,7 @@ function uploadPhoto() {
   if (!file) return alert("Please select a file");
   if (activePinIndex === null) return alert("No pin selected!");
 
+  const pin = allPins[activePinIndex];
   const storageRef = firebase.storage().ref(`globe-photos/${Date.now()}_${file.name}`);
   const uploadTask = storageRef.put(file);
 
@@ -149,38 +156,27 @@ function uploadPhoto() {
       uploadTask.snapshot.ref.getDownloadURL().then(url => {
         document.getElementById("upload-status").innerText = `Uploaded!`;
         // Add photo URL to the pin's photos array
-        if (!allPins[activePinIndex].photos) allPins[activePinIndex].photos = [];
-        allPins[activePinIndex].photos.push(url);
+        if (!pin.photos) pin.photos = [];
+        pin.photos.push(url);
 
-        // Save to localStorage
-        if (allPins[activePinIndex].type === "visited") {
-          visitedPins.forEach(pin => {
-            if (pin.lat === allPins[activePinIndex].lat && pin.lng === allPins[activePinIndex].lng && pin.label === allPins[activePinIndex].label) {
-              if (!pin.photos) pin.photos = [];
-              pin.photos.push(url);
-            }
-          });
-          localStorage.setItem('visitedPins', JSON.stringify(visitedPins));
-        } else {
-          wishlistPins.forEach(pin => {
-            if (pin.lat === allPins[activePinIndex].lat && pin.lng === allPins[activePinIndex].lng && pin.label === allPins[activePinIndex].label) {
-              if (!pin.photos) pin.photos = [];
-              pin.photos.push(url);
-            }
-          });
-          localStorage.setItem('wishlistPins', JSON.stringify(wishlistPins));
+        // Update pin in Firestore
+        if (pin._id) {
+          db.collection('pins').doc(pin._id).update({ photos: pin.photos })
+            .then(() => {
+              gallery.innerHTML = pin.photos.map(url => `<img src="${url}" alt="memory">`).join("");
+              world.pointsData(allPins);
+            })
+            .catch(err => {
+              alert("Failed to save photo to pin.");
+              console.error(err);
+            });
         }
-
-        // Update gallery and globe
-        gallery.innerHTML = allPins[activePinIndex].photos.map(url => `<img src="${url}" alt="memory">`).join("");
-        world.pointsData(allPins);
       });
     }
   );
 }
 
-const auth = firebase.auth();
-
+// login() function is not used on this page, but kept for completeness
 function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
@@ -189,7 +185,7 @@ function login() {
     .then(userCredential => {
       document.getElementById("auth-status").innerText = `Welcome, ${userCredential.user.email}`;
       document.getElementById("auth-box").style.display = "none";
-      document.getElementById("upload-ui").style.display = "block"; // show upload form
+      document.getElementById("upload-ui").style.display = "block";
     })
     .catch(error => {
       console.error(error);
