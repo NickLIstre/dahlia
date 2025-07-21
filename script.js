@@ -69,6 +69,7 @@ const closeBtn = document.getElementById("close-modal");
 
 world
   .pointOfView({ lat: 20, lng: 0, altitude: 2 }, 0)
+  .pointAltitude(0.5) // increase this value for bigger pins
   .onPointClick(point => {
     // Find the index of the clicked pin
     activePinIndex = allPins.findIndex(

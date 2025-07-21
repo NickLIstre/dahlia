@@ -12,6 +12,13 @@ body {
   height: 100vh;
 }
 
+canvas, #globeViz {
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+
 #controls {
   position: absolute;
   top: 24px;
