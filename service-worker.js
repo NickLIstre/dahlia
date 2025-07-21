@@ -1,28 +1,32 @@
-const cacheName = 'globe-v1';
+const cacheName = 'globe-v3';
 const assetsToCache = [
-  '/',
-  '/index.html',
-  '/landing.html',
-  '/globe.html',
-  '/style.css',
-  '/landing.css',
-  '/script.js',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/stephanotis/',
+  '/stephanotis/index.html',
+  '/stephanotis/globe.html',
+  '/stephanotis/landing.html',
+  '/stephanotis/style.css',
+  '/stephanotis/landing.css',
+  '/stephanotis/script.js',
+  '/stephanotis/icons/icon-192.png',
+  '/stephanotis/icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(cacheName).then(cache => {
-      return cache.addAll(assetsToCache);
-    })
+    caches.open(cacheName).then(cache => cache.addAll(assetsToCache))
   );
 });
 
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      return cachedResponse || fetch(event.request);
-    })
+    caches.match(event.request).then(cached => cached || fetch(event.request))
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== cacheName).map(k => caches.delete(k)))
+    )
   );
 });

@@ -7,7 +7,8 @@
   <title>Login</title>
 
   <!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="/stephanotis/manifest.json">
+
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
@@ -112,10 +113,10 @@
   </script>
   <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log("✅ Service Worker registered"))
-      .catch(err => console.error("❌ Service Worker registration failed:", err));
-  }
+  navigator.serviceWorker.register('/stephanotis/service-worker.js', { scope: '/stephanotis/' })
+    .then(() => console.log("✅ Service Worker registered"))
+    .catch(err => console.error("❌ Service Worker registration failed:", err));
+}
 </script>
 <script>
 let deferredPrompt;
