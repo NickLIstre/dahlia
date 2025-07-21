@@ -147,3 +147,15 @@ canvas, #globeViz {
 .styled-button:hover {
   background: #275029;
 }
+
+.photo-item img {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: box-shadow 0.2s;
+}
+.photo-item img:hover {
+  box-shadow: 0 0 8px #888;
+}
+.caption {
+  margin-top: 4px;
+}

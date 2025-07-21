@@ -32,10 +32,19 @@ db.collection('pins').onSnapshot(snapshot => {
   snapshot.forEach(doc => {
     const pin = doc.data();
     pin._id = doc.id; // Save Firestore doc id for later updates
+    // Ensure all photos are objects with {url, caption}
+    if (Array.isArray(pin.photos)) {
+      pin.photos = pin.photos.map(photo =>
+        typeof photo === 'string' ? { url: photo, caption: "" } : photo
+      );
+    } else {
+      pin.photos = [];
+    }
     allPins.push(pin);
   });
   world.pointsData(allPins);
 });
+
 
 // Load countries and keep reference for re-rendering
 fetch('https://unpkg.com/world-atlas@2/countries-110m.json')
@@ -67,28 +76,96 @@ const modal = document.getElementById("photo-modal");
 const gallery = document.getElementById("photo-gallery");
 const closeBtn = document.getElementById("close-modal");
 
+// --- Caption UI elements ---
+const captionInput = document.createElement('input');
+captionInput.type = 'text';
+captionInput.id = 'caption-input';
+captionInput.placeholder = 'Enter caption and press Save';
+captionInput.style.display = 'none';
+captionInput.style.marginTop = '10px';
+
+const saveCaptionBtn = document.createElement('button');
+saveCaptionBtn.innerText = 'Save Caption';
+saveCaptionBtn.style.display = 'none';
+saveCaptionBtn.style.marginLeft = '8px';
+
+gallery.parentNode.insertBefore(captionInput, gallery.nextSibling);
+gallery.parentNode.insertBefore(saveCaptionBtn, captionInput.nextSibling);
+
+let selectedPhotoIdx = null;
+
+function renderGallery(pin) {
+  if (pin.photos && pin.photos.length > 0) {
+    gallery.innerHTML = pin.photos.map((photo, idx) => `
+      <div class="photo-item" style="display:inline-block;margin:8px;text-align:center;">
+        <img src="${photo.url}" 
+             alt="memory" 
+             style="max-width:120px;cursor:pointer;"
+             data-photo-idx="${idx}">
+        <div class="caption" style="font-size:0.9em;color:#444;">
+          ${photo.caption ? photo.caption : ''}
+        </div>
+      </div>
+    `).join("");
+  } else {
+    gallery.innerHTML = "<p>No photos yet. Upload one!</p>";
+  }
+  captionInput.style.display = 'none';
+  saveCaptionBtn.style.display = 'none';
+  selectedPhotoIdx = null;
+}
+
 world
   .pointOfView({ lat: 20, lng: 0, altitude: 2 }, 0)
-  .pointAltitude(0.5) // increase this value for bigger pins
+  .pointAltitude(0.5)
   .onPointClick(point => {
-    // Find the index of the clicked pin
     activePinIndex = allPins.findIndex(
       p => p.lat === point.lat && p.lng === point.lng && p.label === point.label
     );
-    if (point.photos && point.photos.length > 0) {
-      gallery.innerHTML = point.photos.map(url => `<img src="${url}" alt="memory">`).join("");
-    } else {
-      gallery.innerHTML = "<p>No photos yet. Upload one!</p>";
-    }
+    const pin = allPins[activePinIndex];
+    renderGallery(pin);
     modal.style.display = "flex";
   });
 
+gallery.onclick = function(e) {
+  const img = e.target.closest('img[data-photo-idx]');
+  if (!img) return;
+  selectedPhotoIdx = parseInt(img.getAttribute('data-photo-idx'));
+  const pin = allPins[activePinIndex];
+  const photo = pin.photos[selectedPhotoIdx];
+  captionInput.value = photo.caption || '';
+  captionInput.style.display = '';
+  saveCaptionBtn.style.display = '';
+  captionInput.focus();
+};
+
+saveCaptionBtn.onclick = function() {
+  if (activePinIndex === null || selectedPhotoIdx === null) return;
+  const pin = allPins[activePinIndex];
+  pin.photos[selectedPhotoIdx].caption = captionInput.value;
+  // Update Firestore
+  db.collection('pins').doc(pin._id).update({ photos: pin.photos })
+    .then(() => {
+      renderGallery(pin);
+    })
+    .catch(err => {
+      alert("Failed to save caption.");
+      console.error(err);
+    });
+};
+
 closeBtn.onclick = () => {
   modal.style.display = "none";
+  captionInput.style.display = 'none';
+  saveCaptionBtn.style.display = 'none';
 };
 
 window.onclick = e => {
-  if (e.target === modal) modal.style.display = "none";
+  if (e.target === modal) {
+    modal.style.display = "none";
+    captionInput.style.display = 'none';
+    saveCaptionBtn.style.display = 'none';
+  }
 };
 
 document.getElementById('addPin').addEventListener('click', e => {
@@ -156,15 +233,15 @@ function uploadPhoto() {
     () => {
       uploadTask.snapshot.ref.getDownloadURL().then(url => {
         document.getElementById("upload-status").innerText = `Uploaded!`;
-        // Add photo URL to the pin's photos array
+        // Add photo object to the pin's photos array
         if (!pin.photos) pin.photos = [];
-        pin.photos.push(url);
+        pin.photos.push({ url, caption: "" });
 
         // Update pin in Firestore
         if (pin._id) {
           db.collection('pins').doc(pin._id).update({ photos: pin.photos })
             .then(() => {
-              gallery.innerHTML = pin.photos.map(url => `<img src="${url}" alt="memory">`).join("");
+              renderGallery(pin);
               world.pointsData(allPins);
             })
             .catch(err => {
@@ -209,5 +286,4 @@ document.getElementById('install-btn').addEventListener('click', () => {
       deferredPrompt = null;
     });
   }
-});
-
+  });
