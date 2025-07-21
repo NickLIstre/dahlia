@@ -1,7 +1,10 @@
 body {
-  margin: 0;
-  background-color: black;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #9FBFB5;
 }
 
 #globeViz {
@@ -93,4 +96,25 @@ body {
   font-weight: bold;
   color: #333;
   cursor: pointer;
+}
+
+#install-btn {
+  display: none; /* default hidden, shown by JS */
+  margin: 100px auto 0 auto;
+  width: auto;         /* <-- Add this line */
+  min-width: 180px;    /* Optional: ensures button isn't too small */
+  max-width: 320px;    /* Optional: matches login container */
+  background: #3a4a47;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#install-btn:hover {
+  background: #5e7c74;
 }

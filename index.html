@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css" />
   <title>Login</title>
+
+  <!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
   <style>
-  body {
-    background: #9FBFB5;
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Segoe UI', Arial, sans-serif;
-  }
   .login-container {
     background: rgba(255,255,255,0.95);
     padding: 32px 28px 24px 28px;
@@ -78,6 +78,7 @@
     <button onclick="login()">Login</button>
     <p id="error"></p>
   </div>
+  <button id="install-btn">Install App</button>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD-lZwixaJeRa8rwbgbr8giSDh-AIsqzr8",
@@ -104,11 +105,35 @@
           console.error(error);
         });
     }
-
     // Auto-redirect if already logged in
     auth.onAuthStateChanged(user => {
       if (user) window.location.href = "landing.html";
     });
   </script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log("✅ Service Worker registered"))
+      .catch(err => console.error("❌ Service Worker registration failed:", err));
+  }
+</script>
+<script>
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-btn').style.display = 'block';
+});
+
+document.getElementById('install-btn').addEventListener('click', () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('install-btn').style.display = 'none';
+    });
+  }
+});
+</script>
 </body>
 </html>
