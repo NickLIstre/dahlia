@@ -1,14 +1,14 @@
 const cacheName = 'globe-v3';
 const assetsToCache = [
-  '/stephanotis/',
-  '/stephanotis/index.html',
-  '/stephanotis/globe.html',
-  '/stephanotis/landing.html',
-  '/stephanotis/style.css',
-  '/stephanotis/landing.css',
-  '/stephanotis/script.js',
-  '/stephanotis/icons/icon-192.png',
-  '/stephanotis/icons/icon-512.png'
+  '/dahlia/',
+  '/dahlia/index.html',
+  '/dahlia/globe.html',
+  '/dahlia/landing.html',
+  '/dahlia/style.css',
+  '/dahlia/landing.css',
+  '/dahlia/script.js',
+  '/dahlia/icons/icon-192.png',
+  '/dahlia/icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
