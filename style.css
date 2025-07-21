@@ -118,3 +118,21 @@ body {
 #install-btn:hover {
   background: #5e7c74;
 }
+
+.styled-button {
+  width: 100%;
+  padding: 10px 0;
+  background: #5c8164;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.2s;
+}
+
+.styled-button:hover {
+  background: #275029;
+}

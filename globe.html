@@ -72,7 +72,29 @@
       <div id="upload-status"></div>
     </div>
   </div>
-
+  <style>
+    #logout-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: auto;
+  padding: 10px 16px;
+}
+  </style>
+ <button id="logout-btn" class="styled-button">Logout</button>
+ <script>
+    document.getElementById('logout-btn').addEventListener('click', () => {
+  firebase.auth().signOut()
+    .then(() => {
+      // Redirect to login page after logout
+      window.location.href = 'index.html';
+    })
+    .catch(error => {
+      console.error('Logout failed:', error);
+      alert("Logout failed. Check console for more info.");
+    });
+});
+</script>
   <script>
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
