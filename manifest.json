@@ -1,8 +1,7 @@
 {
   "name": "Stephanotis",
   "short_name": "Globe",
-  "start_url": "/stephanotis/index.html",
-  "scope": "/stephanotis/",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#76baae",
