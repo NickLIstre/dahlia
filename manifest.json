@@ -1,19 +1,19 @@
 {
   "name": "Dahlia",
   "short_name": "Dahlia",
-  "start_url": "/stephanotis/index.html",
-  "scope": "/stephanotis/",
+  "start_url": "/dahlia/index.html",
+  "scope": "/dahlia/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#76baae",
   "icons": [
     {
-      "src": "/stephanotis/icons/icon-192.png",
+      "src": "/dahlia/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/stephanotis/icons/icon-512.png",
+      "src": "/dahlia/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
