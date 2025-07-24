@@ -159,3 +159,32 @@ canvas, #globeViz {
 .caption {
   margin-top: 4px;
 }
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.site-logo {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+}
+
+.photo-upload {
+  width: 100%;
+  padding: 10px 0;
+  background: #5c8164;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.2s;
+}
+
+.photo-upload:hover {
+  background: #275029;
+}
