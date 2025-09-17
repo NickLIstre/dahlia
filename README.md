@@ -36,18 +36,7 @@ Hosting: GitHub Pages
 
 PWA: Service Worker + Manifest for offline/installable support
 
-Project Structure
-==================
-dahlia/
-│── icons/              # App icons
-│── index.html          # Login page
-│── globe.html          # Main globe page
-│── landing.html        # Intro page with letter animation
-│── style.css           # Globe styles
-│── landing.css         # Landing page styles
-│── script.js           # Globe logic
-│── service-worker.js   # PWA caching
-│── manifest.json       # PWA manifest
+
 
 Inspiration
 ============
